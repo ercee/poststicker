@@ -77,11 +77,16 @@
         </tbody>
     </table>
 
+    <label>
+        Print adresses
+        <input type="checkbox" th:field="*{onlyAdresses}"/>
+    </label>
     <!-- Tümünü Seç butonu -->
     <button type="button" onclick="selectAll()">Tümünü Seç</button>
 
     <!-- Submit butonu -->
     <button type="submit">Submit</button>
+
 </form>
 
 <!-- JavaScript ile tümünü seç fonksiyonu -->

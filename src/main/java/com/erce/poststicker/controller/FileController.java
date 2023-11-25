@@ -50,9 +50,16 @@ public class FileController {
     
     @PostMapping("/submit-form")
     public ResponseEntity<Resource> submitForm(@ModelAttribute("submitForm") SubmitForm submitForm) {
+        List<FormDto> formDtoList = submitForm.getFormDtoList().stream().filter(FormDto::isSelected).toList();
+        List<FormData> formDataList = mOrderFormMapper.mapFormData(formDtoList);
+        if (!submitForm.isOnlyAdresses()) {
+            return createPostStickers(formDataList);
+        }
+        return createPostStickers(formDataList);
+    }
+    
+    private ResponseEntity<Resource> createPostStickers(List<FormData> formDataList) {
         try {
-            List<FormDto> formDtoList = submitForm.getFormDtoList().stream().filter(FormDto::isSelected).toList();
-            List<FormData> formDataList = mOrderFormMapper.mapFormData(formDtoList);
             File pdfFile = mPocztaPdfWriter.write(formDataList);
             Resource resource = new ByteArrayResource(Files.readAllBytes(pdfFile.toPath()));
             HttpHeaders headers = new HttpHeaders();
