@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td input {
+            width: 100%;
+            padding: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<form action="/submit-form" method="post" th:object="${submitForm}">
+    <table border="1">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Street 1</th>
+            <th>Street 2</th>
+            <th>Zip Code</th>
+            <th>City</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- FormDto listesini döngüye al -->
+        <tr th:each="formDto,iteration : ${formDtoList}">
+            <td>
+                <input type="checkbox" th:field="*{formDtoList[__${iteration.index}__].selected}"/>
+            </td>
+            <td><input th:field="*{formDtoList[__${iteration.index}__].name}"></td>
+            <td><input th:field="*{formDtoList[__${iteration.index}__].street1}"></td>
+            <td><input th:field="*{formDtoList[__${iteration.index}__].street2}"></td>
+            <td><input th:field="*{formDtoList[__${iteration.index}__].zipCode}"></td>
+            <td><input th:field="*{formDtoList[__${iteration.index}__].city}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Tümünü Seç butonu -->
+    <button type="button" onclick="selectAll()">Tümünü Seç</button>
+
+    <!-- Submit butonu -->
+    <button type="submit">Submit</button>
+</form>
+
+<!-- JavaScript ile tümünü seç fonksiyonu -->
+<script th:inline="javascript">
+    function selectAll(){
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox){
+            checkbox.checked = true;
+        });
+    }
+</script>
+
+</body>
+</html>

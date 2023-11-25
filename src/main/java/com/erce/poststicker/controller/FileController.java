@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.erce.poststicker.model.*;
@@ -33,32 +34,34 @@ public class FileController {
         return "import-file";
     }
     
-    
     @PostMapping("/save")
-    public ResponseEntity<Resource> saveFile(@RequestPart("file") MultipartFile file) {
+    public String formList(Model model, @RequestPart("file") MultipartFile file) {
+        List<Order> orders = mEtsyOrderReader.readOrdersFromExcel(file);
+        List<FormDto> formDtoList = mOrderFormMapper.map(orders);
+        
+        // Model'e formDtoList'i ekle
+        SubmitForm attributeValue = new SubmitForm();
+        attributeValue.setFormDtoList(formDtoList);
+        model.addAttribute("submitForm", attributeValue);
+        model.addAttribute("formDtoList", formDtoList);
+        
+        return "form-list-template";
+    }
+    
+    @PostMapping("/submit-form")
+    public ResponseEntity<Resource> submitForm(@ModelAttribute("submitForm") SubmitForm submitForm) {
         try {
-            // Your existing code to process the file and generate PDF
-            List<Order> orders = mEtsyOrderReader.readOrdersFromExcel(file);
-            List<FormData> formDataList = mOrderFormMapper.map(orders);
+            List<FormDto> formDtoList = submitForm.getFormDtoList().stream().filter(FormDto::isSelected).toList();
+            List<FormData> formDataList = mOrderFormMapper.mapFormData(formDtoList);
             File pdfFile = mPocztaPdfWriter.write(formDataList);
-            
-            // Create a Resource from the PDF file
             Resource resource = new ByteArrayResource(Files.readAllBytes(pdfFile.toPath()));
-            
-            // Set up response headers
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + pdfFile.getName());
-            
-            // Return the ResponseEntity with the PDF content and headers
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(resource);
-            
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(resource);
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle the exception appropriately, e.g., return an error response
             return ResponseEntity.status(500).build();
         }
     }
+    
 }
