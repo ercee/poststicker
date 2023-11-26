@@ -2,7 +2,7 @@ package com.erce.poststicker.controller;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.List;
+import java.util.*;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -36,7 +36,12 @@ public class FileController {
     
     @PostMapping("/save")
     public String formList(Model model, @RequestPart("file") MultipartFile file) {
-        List<Order> orders = mEtsyOrderReader.readOrdersFromExcel(file);
+        List<Order> orders;
+        if (file.getOriginalFilename().endsWith(".csv")) {
+            orders = mEtsyOrderReader.readOrdersFromCSV(file);
+        } else {
+            orders = mEtsyOrderReader.readOrdersFromExcel(file);
+        }
         List<FormDto> formDtoList = mOrderFormMapper.map(orders);
         
         // Model'e formDtoList'i ekle

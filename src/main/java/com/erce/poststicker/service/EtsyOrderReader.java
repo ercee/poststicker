@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.erce.poststicker.model.Order;
+import org.apache.commons.csv.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -93,6 +94,53 @@ public class EtsyOrderReader {
         } else {
             return "";
         }
+    }
+    
+    public List<Order> readOrdersFromCSV(MultipartFile file) {
+        List<Order> orders = new ArrayList<>();
+        try (Reader reader = new InputStreamReader(file.getInputStream());
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader())) {
+            
+            for (CSVRecord csvRecord : csvParser) {
+                Order order = mapCsvRecordToOrder(csvRecord);
+                orders.add(order);
+            }
+            
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading orders from CSV", e);
+        }
+        return orders;
+    }
+    
+    private Order mapCsvRecordToOrder(CSVRecord aCsvRecord) {
+        Order order = new Order();
+        order.setSaleDate(aCsvRecord.get(0));
+        order.setOrderId(aCsvRecord.get(1));
+        order.setBuyerUserId(aCsvRecord.get(2));
+        order.setFullName(aCsvRecord.get(3));
+        order.setFirstName(aCsvRecord.get(4));
+        order.setLastName(aCsvRecord.get(5));
+        order.setNumberOfItems(aCsvRecord.get(6));
+        order.setPaymentMethod(aCsvRecord.get(7));
+        order.setDateShipped(aCsvRecord.get(8));
+        order.setStreet1(aCsvRecord.get(9));
+        order.setStreet2(aCsvRecord.get(10));
+        order.setShipCity(aCsvRecord.get(11));
+        order.setShipState(aCsvRecord.get(12));
+        order.setShipZipcode(aCsvRecord.get(13));
+        order.setShipCountry(aCsvRecord.get(14));
+        order.setCurrency(aCsvRecord.get(15));
+        order.setCouponCode(aCsvRecord.get(17));
+        order.setCouponDetails(aCsvRecord.get(18));
+        order.setSalesTax(aCsvRecord.get(22));
+        order.setStatus(aCsvRecord.get(24));
+        order.setBuyer(aCsvRecord.get(30));
+        order.setOrderType(aCsvRecord.get(31));
+        order.setPaymentType(aCsvRecord.get(32));
+        order.setInPersonDiscount(aCsvRecord.get(33));
+        order.setInPersonLocation(aCsvRecord.get(34));
+        order.setSku(aCsvRecord.get(35));
+        return order;
     }
     
 }
