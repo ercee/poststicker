@@ -15,6 +15,7 @@
 	<description>Post sticker creater for Orders </description>
 	<properties>
 		<java.version>17</java.version>
+		<itext7-core.version>8.0.2</itext7-core.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -37,19 +38,25 @@
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itext7-core</artifactId>
-			<version>8.0.2</version>
+			<version>${itext7-core.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>layout</artifactId>
-			<version>8.0.2</version>
+			<version>${itext7-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>forms</artifactId>
-			<version>8.0.2</version>
+			<version>${itext7-core.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>io</artifactId>
+			<version>${itext7-core.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>

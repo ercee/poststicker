@@ -53,17 +53,18 @@ public class FileController {
         List<FormDto> formDtoList = submitForm.getFormDtoList().stream().filter(FormDto::isSelected).toList();
         List<FormData> formDataList = mOrderFormMapper.mapFormData(formDtoList);
         if (!submitForm.isOnlyAdresses()) {
-            return createPostStickers(formDataList);
+            File pdfFile = mPocztaPdfWriter.write(formDataList);
+            return createResource(pdfFile);
         }
-        return createPostStickers(formDataList);
+        File pdfFile = mPocztaPdfWriter.writeAdressesOnly(formDataList);
+        return createResource(pdfFile);
     }
     
-    private ResponseEntity<Resource> createPostStickers(List<FormData> formDataList) {
+    private ResponseEntity<Resource> createResource(File formDataList) {
         try {
-            File pdfFile = mPocztaPdfWriter.write(formDataList);
-            Resource resource = new ByteArrayResource(Files.readAllBytes(pdfFile.toPath()));
+            Resource resource = new ByteArrayResource(Files.readAllBytes(formDataList.toPath()));
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + pdfFile.getName());
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + formDataList.getName());
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(resource);
         } catch (IOException e) {
             e.printStackTrace();

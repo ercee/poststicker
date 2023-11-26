@@ -51,7 +51,7 @@
 <body>
 
 <form action="/submit-form" method="post" th:object="${submitForm}">
-    <table border="1">
+    <table id="liste">
         <thead>
         <tr>
             <th></th>
@@ -92,7 +92,8 @@
 <!-- JavaScript ile tümünü seç fonksiyonu -->
 <script th:inline="javascript">
     function selectAll(){
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var table = document.getElementById('liste');
+        var checkboxes = table.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(function(checkbox){
             checkbox.checked = true;
         });
