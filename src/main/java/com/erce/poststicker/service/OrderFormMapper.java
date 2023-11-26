@@ -1,8 +1,9 @@
 package com.erce.poststicker.service;
 
-import java.util.List;
+import java.util.*;
 import org.springframework.stereotype.Service;
 import com.erce.poststicker.model.*;
+import org.apache.poi.util.StringUtil;
 
 @Service
 public class OrderFormMapper {
@@ -13,9 +14,19 @@ public class OrderFormMapper {
                     FormDto formData = new FormDto();
                     formData.setName(e.getFullName());
                     formData.setStreet1(e.getStreet1());
-                    formData.setStreet2(e.getStreet2());
+                    LinkedList<String> addressDetails = new LinkedList<>();
+                    if (!StringUtil.isBlank(e.getStreet2())) {
+                        addressDetails.add(e.getStreet2());
+                    }
+                    if (!StringUtil.isBlank(e.getShipCity())) {
+                        addressDetails.add(e.getShipCity());
+                    }
+                    if (!StringUtil.isBlank(e.getShipState())) {
+                        addressDetails.add(e.getShipState());
+                    }
+                    formData.setStreet2(String.join("/", addressDetails));
                     formData.setZipCode(e.getShipZipcode());
-                    formData.setCity(e.getShipCity() + "/" + e.getShipState() + "/" + e.getShipCountry());
+                    formData.setCity(e.getShipCountry());
                     return formData;
                 }).toList();
     }
