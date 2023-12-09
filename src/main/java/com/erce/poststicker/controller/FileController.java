@@ -7,6 +7,7 @@ import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.erce.poststicker.model.*;
@@ -75,6 +76,11 @@ public class FileController {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setAutoGrowCollectionLimit(1000);
     }
     
 }
